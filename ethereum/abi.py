@@ -832,6 +832,7 @@ def dec(typ, arg):
     # Dynamic-sized arrays
     elif sz is None:
         L = big_endian_to_int(arg[:32])
+        assert len(arg) >= 32 + 32 * L, "Not enough data for head"
         subtyp = base, sub, arrlist[:-1]
         subsize = get_size(subtyp)
         # If children are dynamic, use the head/tail mechanism. Fortunately,
@@ -839,7 +840,6 @@ def dec(typ, arg):
         # mixed dynamic and static children, as we do in the top-level multi-arg
         # case
         if subsize is None:
-            assert len(arg) >= 32 + 32 * L, "Not enough data for head"
             start_positions = [big_endian_to_int(arg[32 + 32 * i: 64 + 32 * i])
                                for i in range(L)] + [len(arg)]
             outs = [arg[start_positions[i]: start_positions[i + 1]]
